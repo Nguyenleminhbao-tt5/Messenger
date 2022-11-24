@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="public/fontawesome-free-6.1.1-web/css/all.min.css">
+    <link rel='stylesheet' href='style.css'>
+    <title>MESSAGER</title>
+    <style>
+      html{
+        margin: 0;
+        padding: 0;
+      }
+      *{
+          box-sizing: border-box;
+      }
+      body {
+          margin: 0;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+      
+      #form {
+        padding:0;
+        background-color: #242526;
+      }
+      
+      #input {
+          border: none;
+          padding: 0 1rem;
+          flex-grow: 1;
+          border-radius: 2rem;
+          margin: 0.25rem;
+      }
+      
+      #input:focus {
+          outline: none;
+      }
+      #loading{
+        display:none;
+      }
+      #form>button {
+          background: #333;
+          border: none;
+          padding: 0 1rem;
+          margin: 0.25rem;
+          border-radius: 3px;
+          outline: none;
+          color: #fff;
+      }      
+      #messages {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          
+      }
+      
+      #send{
+        cursor:pointer;
+      }
+      #file{
+        
+        width:60px;
+        display:none;
+      }
+      #bin {
+          display: none;
+      }
+      
+      /* CSS */
+      .appchat
+      {
+          display: flex;
+          background-color: #242526;
+          color: white;
+          
+      }
+      .siderbar
+      {
+          width: 30%;
+          border: 1.3px solid #393a3b;
+          height: 100vh;
+          position:fixed;
+          left:0;
+          z-index:1;
+          background-color: #242526;
+      }
+      .siderbar__heading
+      {
+          border-bottom: 1.3px solid #393a3b;
+          height: 79px;
+      }
+      .siderbar__heading-title
+      {
+          display: block;
+          font-size: 30px;
+          font-weight: 700;
+          padding: 0px 0 10px 20px;
+          color: white;
+      }
+      #headingName
+      {
+          margin-left: 20px;
+      }
+      .siderbar_friends
+      {
+        background-color: #242526;
+      }
+      #listFriend
+      {
+          list-style: none;
+          padding-left: 0;
+      }
+      .listFriend__item
+      {
+          height: 75px;
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          background-color: #252f3c;
+          border-radius: 5px;
+          margin: 5px;
+          
+      }
+      .listFriend__item-avatar
+      {
+          margin-left: 20px;
+          background-color: #c9ccd1;
+          border-radius: 30px;
+          width: 60px;
+          height: 60px;
+          position: relative;
+      }
+      .avatar__img
+      {
+        font-size: 22px;
+        position: absolute;
+        border-radius: 30px;
+        width: 60px;
+        height: 60px;
+        top:0;
+        left: 0;
+      }
+      .avatar__img1
+      {
+        font-size: 22px;
+        position: absolute;
+        border-radius: 20px;
+        width: 40px;
+        height: 40px;
+        top:0;
+        left: 0;
+      }
+      .avatar__cir
+      {
+          background-color: #31a24c;
+          display: block;
+          position: absolute;
+          width: 12px;
+          height: 12px;
+          border-radius: 7px;
+          top: 48px;
+          left: 39px;
+          border: 1px black solid;
+
+      }
+      .avatar__circle
+      {
+          background-color: #31a24c;
+          display: block;
+          position: absolute;
+          width: 12px;
+          height: 12px;
+          border-radius: 7px;
+          top: 28px;
+          left: 25px;
+          border: 1px black solid;
+          
+      }
+      .listFriend__item-name
+      {
+          margin-left: 20px;
+          font-size: 20px;
+      }
+      .container
+      {
+          width: 70%;
+          border: 1.3px solid #393a3b;
+          border-left: none;
+          position: relative;
+          margin-left:30%;
+      }
+      .container__heading
+      {
+          display: flex;
+          align-items: center;
+          height: 80px;
+          width: 70%;
+          position: fixed;
+          top:0;
+          border-bottom: 1.3px solid #393a3b;
+          justify-content: space-between;
+          z-index:1;
+          background-color: #242526;
+      }
+      .container__heading-status
+      {
+          display: flex;
+      }
+      .status-avatar
+      {
+          margin-left: 20px;
+          background-color: #c9ccd1;
+          border-radius: 20px;
+          width: 40px;
+          height: 40px;
+          position: relative;
+          
+      }
+      .status-active
+      {
+          margin-left: 8px;
+          display: flex;
+          flex-direction: column;
+          
+      }
+      .active-name
+      {
+          font-size: 18px;
+          font-weight: 600;
+      }
+      .active
+      {
+          font-size: 12px;
+          color:#a6a9ad ;
+      }
+      .status-leave
+      {
+        cursor: pointer;
+        margin-right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+        background-color: #242526;
+        color: #0084FE;
+        border: none;
+        font-size: 19px;
+      }
+      
+      .chat{
+        margin-top: 80px;
+       }
+      .content
+      {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom:80px;
+        min-height:calc(100vh - 60px - 80px - 20px);
+      }
+      .Input
+      {
+          position: fixed;
+          bottom: 0;
+          z-index:1;
+          padding: 5px;
+          height: 60px;
+          border-top: 1.3px solid #393a3b;
+          width: 70%;
+          display: flex;
+          align-content: center;
+          align-items: center;
+          background-color: #242526;
+      }
+      #yourMessage
+      {
+          width: 90%;
+          height: 36px;
+          margin: 0 10px 0 10px;
+          border-radius: 17px;
+          border: none;
+          background-color: #3a3b3c;
+          color: white;
+          padding-left: 20px;
+          font-size: 15px;
+      }
+      #yourMessage::placeholder
+      {
+          margin-left: 10px;
+      }
+      #sendMess
+      {
+          background-color: #242526;
+          border: none;
+          cursor: pointer;
+      }
+      .getFile{
+        background: #242526;
+        margin-left:15px;
+        cursor:pointer;
+      }
+      .file
+      {
+          background-color: #3e4042 !important;
+      }
+      .file-btn{
+        background-color: transparent;
+        border: none;
+        display: flex;
+        align-items: center;
+        cursor:pointer;
+        color:white;
+      }
+      .file-icon{
+        margin-right:10px;
+      }
+      
+      .liRight
+      {
+          position:absolute;
+          right:0;
+          height: 40px;
+          margin: 10px 20px 10px 10px;
+          background-color: rgb(0, 132, 255);
+          color:white;
+          border-radius: 22px;
+          padding: 7px 10px 7px 10px;
+      }
+      .liLeft
+      {
+          position:absolute;
+          left:0;
+          height: 40px;
+          margin: 10px 10px 10px 20px;
+          background-color: #3e4042;
+          color:white;
+          border-radius: 22px;
+          padding: 7px 10px 7px 10px;
+      }
+      /*.liLeft
+      {
+        position: absolute;
+        left: 0;
+        height: 40px;
+        margin: 10px 10px 10px 0px;
+        color: white;
+        border-radius: 22px;
+        padding: 7px 10px 7px 10px;
+        display: flex;
+        align-items: center;
+      }
+      .status-avatar1{
+        background-color: #c9ccd1;
+        border-radius: 15px;
+        width: 30px;
+        height: 30px;
+        position: relative;
+        margin-right: 10px;
+      }
+      .content-mess{
+        background-color: #3e4042; 
+        height: 40px;
+        background-color: #3e4042;
+        color: white;
+        border-radius: 22px;
+        padding: 7px 10px 7px 10px;
+      }*/
+
+      .siderbar__room-heading
+      {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 20px 0 30px 20px;
+        color: #0084ff;
+      }
+      .siderbar__room-bottom
+      {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .room{
+        margin:10px;
+        padding-bottom:8px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        background-color: #242526;
+        border: none;
+        cursor:pointer;
+      }
+      .room:hover
+      {
+        background-color:#3a3b3c;
+        color:#0084ff;
+        border-radius: 10px;
+      }
+      .room:hover .room__title
+      {
+        color: #0084ff;
+      }
+      .room__title
+      {
+        font-size: 14px;
+        font-weight: 600;
+        color: white;
+        margin-bottom:5px;
+      }
+      .room-avatar{
+          margin: 0px 10px 0 10px;
+          background-color: #c9ccd1;
+          border-radius: 30px;
+          width: 60px;
+          height: 60px;
+          position: relative;
+      }
+      .room__img{
+        font-size: 22px;
+        position: absolute;
+        border-radius: 30px;
+        width: 60px;
+        height: 60px;
+        top:0;
+        left: 0;
+      }
+      .room__cir{
+        background-color: #31a24c;
+        display: block;
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 7px;
+        top: 47px;
+        left: 44px;
+        border: 1px black solid;
+      }
+      #yourRoom
+      {
+        display:none;
+      }
+      #joinRoom
+      {
+        display:none;
+      }
+      .icon-leave
+      {    
+        font-size: 22px;
+        border-radius: 25px;
+        width: 50px;
+        height: 50px;
+  
+      }
+    </style>
+</head>
+<body>
+   <div class="appchat">
+        
+        <div class="siderbar">
+            <div class="siderbar__heading">
+                <span class="siderbar__heading-title">Chat</span>
+                <span id="headingName"></span>
+            </div>
+            <div class="siderbar__friends">
+              <ul id="listFriend">
+              </ul>
+              <div class="siderbar__room">
+                <div class="siderbar__room-heading">ROOM</div>
+                <div class="siderbar__room-bottom">
+                  <button class="room">
+                    <span class="room__title">Room1</span>
+                    <div class="room-avatar">
+                      <img class="room__img" src='https://i.pinimg.com/736x/2f/1b/8e/2f1b8ec62f36a424aed23f8583e72376.jpg'>
+                      <span class="room__cir"></span>
+                    </div>
+                  </button>
+                  <button class="room">
+                    <span class="room__title">Room2</span>
+                    <div class="room-avatar">
+                      <img class="room__img" src='https://khoinguonsangtao.vn/wp-content/uploads/2022/07/avatar-cute-2.jpg'>
+                      <span class="room__cir"></span>
+                    </div>
+                  </button>
+                  <button class="room">
+                    <span class="room__title">Room3</span>
+                    <div class="room-avatar">
+                      <img class="room__img" src='https://i.pinimg.com/736x/d7/46/92/d746925076f7acef40bc89a27ad40b9a.jpg'>
+                      <span class="room__cir"></span>
+                    </div>
+                  </button>
+                  <button class="room">
+                    <span class="room__title">Room4</span>
+                    <div class="room-avatar">
+                      <img class="room__img" src='https://i0.wp.com/thatnhucuocsong.com.vn/wp-content/uploads/2022/04/Anh-cute.jpg?ssl=1'>
+                      <span class="room__cir"></span>
+                    </div>
+                  </button>
+                  <button class="room">
+                    <span class="room__title">Room5</span>
+                    <div class="room-avatar">
+                      <img class="room__img" src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxnWiTBbnxcUN3yJQXCBKV4fm1AqnzvCy1KQ&usqp=CAU'>
+                      <span class="room__cir"></span>
+                    </div>
+                  </button>
+                  <button class="room">
+                    <span class="room__title">Room6</span>
+                    <div class="room-avatar">
+                      <img class="room__img" src='https://i.pinimg.com/736x/2f/1b/8e/2f1b8ec62f36a424aed23f8583e72376.jpg'>
+                      <span class="room__cir"></span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+              <input id="yourRoom" placeholder='Nhập phòng'>
+              <button id="joinRoom" >JOIN</button>
+             
+      
+            </div>
+        </div>
+        <div class="container">
+            <div class="container__heading">
+              <div class="container__heading-status">
+                <div class="status-avatar">
+                  <img class="avatar__img1" src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_IcgTrUVITbkuoqzhg0usF1GUmIXtc0OqXg&usqp=CAU'>
+                  <span class="avatar__circle"></span>
+                </div>
+                <div class="status-active">
+                  <span class="active-name">CHAT TỔNG</span>
+                  <span class="active">Đang hoạt động</span>
+                </div>
+              </div>
+              <button class="status-leave" id="leaveRoom">
+                <img class="icon-leave" src="https://thumbs.dreamstime.com/b/exit-rgb-color-icon-emergency-leaving-direction-case-fire-alert-escape-way-safety-guidance-doorway-to-leave-building-231533937.jpg">
+              </button>
+            </div>     
+            <div class="chat">
+                <div class="content">
+                    <ul id="messages">
+                    </ul>
+                </div>
+                <div class="Input">
+                  
+                    <form id="form">
+                      <label class="getFile"> 
+                        <svg class="getfile-icon" height="20px" viewBox="0 -1 17 17" width="20px"><g fill="none" fill-rule="evenodd"><path d="M2.882 13.13C3.476 4.743 3.773.48 3.773.348L2.195.516c-.7.1-1.478.647-1.478 1.647l1.092 11.419c0 .5.2.9.4 1.3.4.2.7.4.9.4h.4c-.6-.6-.727-.951-.627-2.151z" fill="#0084ff"></path><circle cx="8.5" cy="4.5" fill="#0084ff" r="1.5"></circle><path d="M14 6.2c-.2-.2-.6-.3-.8-.1l-2.8 2.4c-.2.1-.2.4 0 .6l.6.7c.2.2.2.6-.1.8-.1.1-.2.1-.4.1s-.3-.1-.4-.2L8.3 8.3c-.2-.2-.6-.3-.8-.1l-2.6 2-.4 3.1c0 .5.2 1.6.7 1.7l8.8.6c.2 0 .5 0 .7-.2.2-.2.5-.7.6-.9l.6-5.9L14 6.2z" fill="#0084ff"></path><path d="M13.9 15.5l-8.2-.7c-.7-.1-1.3-.8-1.3-1.6l1-11.4C5.5 1 6.2.5 7 .5l8.2.7c.8.1 1.3.8 1.3 1.6l-1 11.4c-.1.8-.8 1.4-1.6 1.3z" stroke="#0084ff" stroke-linecap="round" stroke-linejoin="round"></path></g></svg>
+                        <input id="file" type="file" name="filename">
+                      </label>
+                      <span id="loading"></span>
+                    </form>
+                    <input id="yourMessage" placeholder='Aa'>
+                    <button id="sendMess" onclick="sendfunc()">
+                      <svg class="send-icon" height="20px" viewBox="0 0 24 24" width="20px"><path d="M16.6915026,12.4744748 L3.50612381,13.2599618 C3.19218622,13.2599618 3.03521743,13.4170592 3.03521743,13.5741566 L1.15159189,20.0151496 C0.8376543,20.8006365 0.99,21.89 1.77946707,22.52 C2.41,22.99 3.50612381,23.1 4.13399899,22.8429026 L21.714504,14.0454487 C22.6563168,13.5741566 23.1272231,12.6315722 22.9702544,11.6889879 C22.8132856,11.0605983 22.3423792,10.4322088 21.714504,10.118014 L4.13399899,1.16346272 C3.34915502,0.9 2.40734225,1.00636533 1.77946707,1.4776575 C0.994623095,2.10604706 0.8376543,3.0486314 1.15159189,3.99121575 L3.03521743,10.4322088 C3.03521743,10.5893061 3.34915502,10.7464035 3.50612381,10.7464035 L16.6915026,11.5318905 C16.6915026,11.5318905 17.1624089,11.5318905 17.1624089,12.0031827 C17.1624089,12.4744748 16.6915026,12.4744748 16.6915026,12.4744748 Z" fill="#0084ff"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+   </div>
+
+   
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+    // Create 1 socket (client)
+    const socket = io({transports: ['websocket'],});
+
+   
+
+    // GET NAME
+    let countLogin=0;
+    let name='',urlAvatar='';
+    if(countLogin<1) 
+    { 
+      name=prompt('Nhập tên USER');
+      urlAvatar=prompt('Nhập url ảnh đại diện (nếu cần)');
+      if(name==='') name='User';
+      if(urlAvatar==='') urlAvatar='https://thuthuatnhanh.com/wp-content/uploads/2022/01/Avatar-Tet-doi-dang-yeu-cho-nu.jpg';
+
+      document.getElementById('headingName').innerHTML=`Messager của ${name}`;
+      // add 1 name client to server
+      appendFriend(name,urlAvatar);
+      socket.emit('addName',name);
+      countLogin++;
+    }
+
+     // create arr object room
+
+     const Rooms=[
+      {
+        name:'CHAT TỔNG',
+        img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_IcgTrUVITbkuoqzhg0usF1GUmIXtc0OqXg&usqp=CAU'
+      },
+      {
+        name:'ROOM 1',
+        img:'https://i.pinimg.com/736x/2f/1b/8e/2f1b8ec62f36a424aed23f8583e72376.jpg'
+      },
+      {
+        name:'ROOM 2',
+        img:'https://khoinguonsangtao.vn/wp-content/uploads/2022/07/avatar-cute-2.jpg'
+      },
+      {
+        name:'ROOM 3',
+        img:'https://i.pinimg.com/736x/d7/46/92/d746925076f7acef40bc89a27ad40b9a.jpg'
+      },
+      {
+        name:'ROOM 4',
+        img:'https://i0.wp.com/thatnhucuocsong.com.vn/wp-content/uploads/2022/04/Anh-cute.jpg?ssl=1'
+      },
+      {
+        name:'ROOM 5',
+        img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxnWiTBbnxcUN3yJQXCBKV4fm1AqnzvCy1KQ&usqp=CAU'
+      },
+      {
+        name:'ROOM 6',
+        img:'https://i.pinimg.com/736x/2f/1b/8e/2f1b8ec62f36a424aed23f8583e72376.jpg'
+      }
+    ];
+    //SEND MESSAGE
+
+    //join room
+    document.getElementById('joinRoom').addEventListener('click',()=>
+    {
+      const room=document.getElementById('yourRoom').value;
+      console.log(`Kết nối tới room: ${room}`);
+      socket.emit('joinRoom',room);
+    })
+    //leave room
+    document.getElementById('leaveRoom').addEventListener('click',()=>
+    {
+      if(document.getElementById('yourRoom').value!=='')
+      {
+        console.log(`Rời phòng ${document.getElementById('yourRoom').value}`);
+        
+        document.getElementById('messages').innerHTML='';
+        document.querySelector('.active-name').innerHTML=Rooms[0].name;
+        document.querySelector('.avatar__img1').setAttribute('src',Rooms[0].img);
+
+        const mess=document.createElement('li');
+        mess.innerHTML=`${name} đã rời chat ${ document.getElementById('yourRoom').value}`;
+        mess.classList.add('liLeft');
+        document.getElementById('messages').appendChild(mess);
+        document.getElementById('messages').appendChild(document.createElement('br'));
+        document.getElementById('messages').appendChild(document.createElement('br'));        
+
+        // send message 
+        let room='';
+        if(document.getElementById('yourRoom')!==null) room=document.getElementById('yourRoom').value
+        socket.emit('sendMessage',`${name} đã rời chat ${ document.getElementById('yourRoom').value}`,room);
+        document.getElementById('yourRoom').value='';
+      }
+    })
+    // receive messages
+    socket.on('receiveMessage',data=>
+    {
+      if(data!='')
+      {
+        const mess=document.createElement('li');
+        mess.innerHTML=data;
+        mess.classList.add('liLeft');
+        document.getElementById('messages').appendChild(mess);
+        document.getElementById('messages').appendChild(document.createElement('br'));
+        document.getElementById('messages').appendChild(document.createElement('br'));
+      }
+    })
+
+
+    // SEND FILE
+    
+    // download file
+    const downloadFile = (filename, fileurl) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', fileurl, true);
+        xhr.responseType = 'blob';
+        xhr.onload = function(e) {
+            if (this.status == 200) {
+                var myBlob = this.response;
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(myBlob);
+                link.download = filename;
+                link.click();
+            }
+        };
+        xhr.send();
+    }
+
+    // append HTML
+    const appendHTML = (msg,pos) => {
+
+        const fileName = JSON.parse(msg)[0];
+        const fileUrl = JSON.parse(msg)[1];
+
+        const li= document.createElement('li');
+        li.classList.add(pos);
+        li.classList.add('file');
+        li.innerHTML=
+        ` <button class='file-btn'>
+          <svg viewBox="0 0 36 36" class="file-icon" fill="currentColor" height="24" width="24"><path clip-rule="evenodd" d="M18 8c0-.6-.4-1-1-1h-6a2 2 0 00-2 2v18c0 1.1.9 2 2 2h14a2 2 0 002-2V17c0-.6-.4-1-1-1h-4a4 4 0 01-4-4V8zm-6 7c0-.6.4-1 1-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm1 3.5a1 1 0 100 2h10a1 1 0 100-2H13zm0 4.5a1 1 0 100 2h10a1 1 0 100-2H13z" fill-rule="evenodd"></path><path d="M22 14h4a1 1 0 00.7-1.7l-5-5A1 1 0 0020 8v4c0 1.1.9 2 2 2z"></path></svg>
+          <span>${fileName}</span>
+          <span id='bin'>${fileUrl}</span>
+        </button>
+        `;
+        document.getElementById('messages').appendChild(li);
+        document.querySelector('.file-btn').addEventListener("click", () => downloadFile(fileName, fileUrl));
+        document.getElementById('messages').appendChild(document.createElement('br'));
+        document.getElementById('messages').appendChild(document.createElement('br'));
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+
+
+    // save list file
+    var form = document.getElementById('form');
+    var input = '';
+
+    // send file to server
+    document.getElementById('yourMessage').addEventListener('keypress',e=>
+    {
+      if(e.key==='Enter')
+      {
+        e.preventDefault();
+        document.getElementById('sendMess').click();
+      }
+    });
+    const sendfunc = () => {
+
+      if(document.getElementById('yourMessage').value!='')
+      {
+        const data=document.getElementById('yourMessage').value;
+        document.getElementById('yourMessage').value='';
+        let room='';
+        if(document.getElementById('yourRoom')!==null) room=document.getElementById('yourRoom').value
+
+        socket.emit('sendMessage',data,room);
+        const mess=document.createElement('li');
+        mess.innerHTML=data;
+        mess.classList.add('liRight');
+        document.getElementById('messages').appendChild(mess);
+        document.getElementById('messages').appendChild(document.createElement('br'));
+        document.getElementById('messages').appendChild(document.createElement('br'));
+      }
+
+      console.log("sending...");
+      socket.emit('sending');
+      // no file selected to read
+      if (document.querySelector("#file").value == '') {
+        console.log('No file selected');
+         return;
+      }
+      else
+      {
+        var file = document.querySelector("#file").files[0];
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+        // binary data
+        input = JSON.stringify([file.name, e.target.result]);
+        if (input) {
+          const room=document.getElementById('yourRoom').value;
+          socket.emit('sendFile', input,room);
+          appendHTML(input,'liRight');
+          input = '';
+          socket.emit('finished sending');
+          console.log("finished sending");
+          }
+        };
+
+        reader.onerror = function(e) {
+        // error occurred
+        console.log('Error : ' + e.type);
+        };
+        reader.readAsDataURL(file);
+        document.querySelector("#file").value = '';
+      }
+    };
+
+    //receive file
+    socket.on('receiveFile',msg=>{
+      if(msg)
+      {
+        appendHTML(msg,'liLeft');
+      }
+    });
+    
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+    });
+
+
+   // socket.on("give messages", () => socket.emit("take messages", JSON.stringify(messages_list)))
+    socket.on('init', (msg) => console.log(msg));
+    socket.on('user disconnect', (msg) => console.log(msg));
+    socket.on("will disconnect all", () => alert("Files total size exceeds maximum. Disconnected"))
+    
+    // loading file
+    socket.on('loading', () => {
+        console.log("loading");
+        var loading = document.getElementById('loading');
+        loading.textContent = "LOADING";
+    });
+
+    // stop loading file
+    socket.on('stop loading', () => {
+        console.log("loading finished");
+        var loading = document.getElementById('loading');
+        loading.textContent = "";
+    });
+
+    // append list friend
+    function appendFriend(name,urlAvatar)
+    {
+      const list = document.getElementById('listFriend');
+      const li = document.createElement('li');
+      li.classList.add('listFriend__item');
+      li.innerHTML=`
+      <div class="listFriend__item-avatar">
+        <img class="avatar__img" src='${urlAvatar}'>
+        <span class="avatar__cir"></span>
+      </div>
+      <span class="listFriend__item-name">${name}</span>
+      `;
+      list.appendChild(li);
+    }
+    const listRoom=document.querySelectorAll('.room');
+    console.log(listRoom);
+    
+
+    listRoom.forEach((room,index)=>
+    {
+      room.addEventListener('click',()=>
+      {
+        document.getElementById('yourRoom').value=`Room${index+1}`;
+        document.getElementById('messages').innerHTML='';
+        document.querySelector('.active-name').innerHTML=Rooms[index+1].name;
+        document.querySelector('.avatar__img1').setAttribute('src',Rooms[index+1].img);
+
+        const mess=document.createElement('li');
+        mess.innerHTML=`${name} đã tham gia chat ${ document.getElementById('yourRoom').value}`;
+        mess.classList.add('liLeft');
+        document.getElementById('messages').appendChild(mess);
+        document.getElementById('messages').appendChild(document.createElement('br'));
+        document.getElementById('messages').appendChild(document.createElement('br'));        
+
+        // send message 
+        let room='';
+        if(document.getElementById('yourRoom')!==null) room=document.getElementById('yourRoom').value
+        socket.emit('sendMessage',`${name} đã tham gia chat ${ document.getElementById('yourRoom').value}`,room);
+        document.getElementById('joinRoom').click();
+      });
+    });
+ 
+    
+</script>
+</body>
+</html>
