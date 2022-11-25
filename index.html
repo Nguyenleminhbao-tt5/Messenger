@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="public/fontawesome-free-6.1.1-web/css/all.min.css">
-    <link rel='stylesheet' href='style.css'>
     <title>MESSAGER</title>
     <style>
       html{
@@ -301,6 +299,9 @@
       .file
       {
           background-color: #3e4042 !important;
+          height: 40px;
+          border-radius: 22px;
+          padding: 7px 10px 7px 10px;
       }
       .file-btn{
         background-color: transparent;
@@ -327,17 +328,6 @@
       }
       .liLeft
       {
-          position:absolute;
-          left:0;
-          height: 40px;
-          margin: 10px 10px 10px 20px;
-          background-color: #3e4042;
-          color:white;
-          border-radius: 22px;
-          padding: 7px 10px 7px 10px;
-      }
-      /*.liLeft
-      {
         position: absolute;
         left: 0;
         height: 40px;
@@ -350,11 +340,25 @@
       }
       .status-avatar1{
         background-color: #c9ccd1;
-        border-radius: 15px;
-        width: 30px;
-        height: 30px;
+        border-radius: 18px;
+        width: 36px;
+        height: 36px;
         position: relative;
         margin-right: 10px;
+      }
+      .avatar__img2
+      {
+        font-size: 22px;
+        position: absolute;
+        border-radius: 18px;
+        width: 36px;
+        height: 36px;
+        top: 0;
+        left: 0;
+      }
+      .status-avatar1:hover .avatar__name
+      {
+        display: block !important;
       }
       .content-mess{
         background-color: #3e4042; 
@@ -363,8 +367,18 @@
         color: white;
         border-radius: 22px;
         padding: 7px 10px 7px 10px;
-      }*/
-
+      }
+      .avatar__name {
+        position: absolute;
+        top: -30px;
+        left: 10px;
+        z-index: 2;
+        display: block;
+        background-color: #606770;
+        border-radius: 10px;
+        padding: 1px 5px 5px 5px;
+        display:none;
+      }
       .siderbar__room-heading
       {
         font-size: 20px;
@@ -447,6 +461,10 @@
         width: 50px;
         height: 50px;
   
+      }
+      .left{
+        background-color: #3e4042 !important;
+        margin-left: 10px;
       }
     </style>
 </head>
@@ -533,6 +551,25 @@
             <div class="chat">
                 <div class="content">
                     <ul id="messages">
+                     <!-- <li class="liLeft">
+                        <div class="status-avatar1">
+                          <img class="avatar__img2" src="https://i.pinimg.com/736x/2f/1b/8e/2f1b8ec62f36a424aed23f8583e72376.jpg">
+                        </div>
+                        <span class="content-mess">Chào</span>
+                        <span class="avatar__name">Nam</span>
+                      </li>
+                      <br>
+                      <br>
+                      <li class="liLeft">
+                        <div class="status-avatar1">
+                          <img class="avatar__img2" src="https://i.pinimg.com/736x/2f/1b/8e/2f1b8ec62f36a424aed23f8583e72376.jpg">
+                        </div> 
+                        <button class="file-btn file">
+                          <svg viewBox="0 0 36 36" class="file-icon" fill="currentColor" height="24" width="24"><path clip-rule="evenodd" d="M18 8c0-.6-.4-1-1-1h-6a2 2 0 00-2 2v18c0 1.1.9 2 2 2h14a2 2 0 002-2V17c0-.6-.4-1-1-1h-4a4 4 0 01-4-4V8zm-6 7c0-.6.4-1 1-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm1 3.5a1 1 0 100 2h10a1 1 0 100-2H13zm0 4.5a1 1 0 100 2h10a1 1 0 100-2H13z" fill-rule="evenodd"></path><path d="M22 14h4a1 1 0 00.7-1.7l-5-5A1 1 0 0020 8v4c0 1.1.9 2 2 2z"></path></svg>
+                          <span>2b.png</span>
+                        </button>
+                        <span class="avatar__name">Nam</span>
+                      </li>-->
                     </ul>
                 </div>
                 <div class="Input">
@@ -564,18 +601,21 @@
 
     // GET NAME
     let countLogin=0;
-    let name='',urlAvatar='';
+    let user={
+      name:'',
+      urlAvatar:''
+    };
     if(countLogin<1) 
     { 
-      name=prompt('Nhập tên USER');
-      urlAvatar=prompt('Nhập url ảnh đại diện (nếu cần)');
-      if(name==='') name='User';
-      if(urlAvatar==='') urlAvatar='https://thuthuatnhanh.com/wp-content/uploads/2022/01/Avatar-Tet-doi-dang-yeu-cho-nu.jpg';
+      user.name=prompt('Nhập tên USER');
+      user.urlAvatar=prompt('Nhập url ảnh đại diện (nếu cần)');
+      if(user.name==='') user.name='User';
+      if(user.urlAvatar==='') user.urlAvatar='https://thuthuatnhanh.com/wp-content/uploads/2022/01/Avatar-Tet-doi-dang-yeu-cho-nu.jpg';
 
-      document.getElementById('headingName').innerHTML=`Messager của ${name}`;
+      document.getElementById('headingName').innerHTML=`Messager của ${user.name}`;
       // add 1 name client to server
-      appendFriend(name,urlAvatar);
-      socket.emit('addName',name);
+      appendFriend(user);
+      socket.emit('addName',user.name);
       countLogin++;
     }
 
@@ -631,28 +671,39 @@
         document.querySelector('.active-name').innerHTML=Rooms[0].name;
         document.querySelector('.avatar__img1').setAttribute('src',Rooms[0].img);
 
+
         const mess=document.createElement('li');
-        mess.innerHTML=`${name} đã rời chat ${ document.getElementById('yourRoom').value}`;
         mess.classList.add('liLeft');
+        mess.innerHTML=
+        `<div class="status-avatar1">
+            <img class="avatar__img2" src="${user.urlAvatar}">
+          </div>
+          <span class="content-mess">${user.name} đã rời chat ${ document.getElementById('yourRoom').value}</span>
+          <span class="avatar__name">${user.name}</span>`;
         document.getElementById('messages').appendChild(mess);
         document.getElementById('messages').appendChild(document.createElement('br'));
-        document.getElementById('messages').appendChild(document.createElement('br'));        
+        document.getElementById('messages').appendChild(document.createElement('br'));       
 
         // send message 
         let room='';
         if(document.getElementById('yourRoom')!==null) room=document.getElementById('yourRoom').value
-        socket.emit('sendMessage',`${name} đã rời chat ${ document.getElementById('yourRoom').value}`,room);
+        socket.emit('sendMessage',`${user.name} đã rời chat ${ document.getElementById('yourRoom').value}`,user,room);
         document.getElementById('yourRoom').value='';
       }
     })
     // receive messages
-    socket.on('receiveMessage',data=>
+    socket.on('receiveMessage',(data,user1)=>
     {
       if(data!='')
       {
         const mess=document.createElement('li');
-        mess.innerHTML=data;
         mess.classList.add('liLeft');
+        mess.innerHTML=
+        `<div class="status-avatar1">
+            <img class="avatar__img2" src="${user1.urlAvatar}">
+          </div>
+          <span class="content-mess">${data}</span>
+          <span class="avatar__name">${user1.name}</span>`;
         document.getElementById('messages').appendChild(mess);
         document.getElementById('messages').appendChild(document.createElement('br'));
         document.getElementById('messages').appendChild(document.createElement('br'));
@@ -680,22 +731,41 @@
     }
 
     // append HTML
-    const appendHTML = (msg,pos) => {
+    const appendHTML = (msg,user1,pos) => {
 
         const fileName = JSON.parse(msg)[0];
         const fileUrl = JSON.parse(msg)[1];
 
-        const li= document.createElement('li');
-        li.classList.add(pos);
-        li.classList.add('file');
-        li.innerHTML=
-        ` <button class='file-btn'>
-          <svg viewBox="0 0 36 36" class="file-icon" fill="currentColor" height="24" width="24"><path clip-rule="evenodd" d="M18 8c0-.6-.4-1-1-1h-6a2 2 0 00-2 2v18c0 1.1.9 2 2 2h14a2 2 0 002-2V17c0-.6-.4-1-1-1h-4a4 4 0 01-4-4V8zm-6 7c0-.6.4-1 1-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm1 3.5a1 1 0 100 2h10a1 1 0 100-2H13zm0 4.5a1 1 0 100 2h10a1 1 0 100-2H13z" fill-rule="evenodd"></path><path d="M22 14h4a1 1 0 00.7-1.7l-5-5A1 1 0 0020 8v4c0 1.1.9 2 2 2z"></path></svg>
-          <span>${fileName}</span>
-          <span id='bin'>${fileUrl}</span>
-        </button>
-        `;
-        document.getElementById('messages').appendChild(li);
+        if(pos=='liRight')
+        {
+          const li= document.createElement('li');
+          li.classList.add(pos);
+          li.classList.add('file');
+          li.innerHTML=
+          ` <button class='file-btn'>
+            <svg viewBox="0 0 36 36" class="file-icon" fill="currentColor" height="24" width="24"><path clip-rule="evenodd" d="M18 8c0-.6-.4-1-1-1h-6a2 2 0 00-2 2v18c0 1.1.9 2 2 2h14a2 2 0 002-2V17c0-.6-.4-1-1-1h-4a4 4 0 01-4-4V8zm-6 7c0-.6.4-1 1-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm1 3.5a1 1 0 100 2h10a1 1 0 100-2H13zm0 4.5a1 1 0 100 2h10a1 1 0 100-2H13z" fill-rule="evenodd"></path><path d="M22 14h4a1 1 0 00.7-1.7l-5-5A1 1 0 0020 8v4c0 1.1.9 2 2 2z"></path></svg>
+            <span>${fileName}</span>
+            <span id='bin'>${fileUrl}</span>
+          </button>
+          `;
+          document.getElementById('messages').appendChild(li);  
+        }
+        else if(pos=='liLeft')
+        {
+          const li= document.createElement('li');
+          li.classList.add(pos);
+          li.innerHTML=
+          `<div class="status-avatar1">
+            <img class="avatar__img2" src="${user1.urlAvatar}">
+          </div> 
+          <button class="file-btn file">
+            <svg viewBox="0 0 36 36" class="file-icon" fill="currentColor" height="24" width="24"><path clip-rule="evenodd" d="M18 8c0-.6-.4-1-1-1h-6a2 2 0 00-2 2v18c0 1.1.9 2 2 2h14a2 2 0 002-2V17c0-.6-.4-1-1-1h-4a4 4 0 01-4-4V8zm-6 7c0-.6.4-1 1-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm1 3.5a1 1 0 100 2h10a1 1 0 100-2H13zm0 4.5a1 1 0 100 2h10a1 1 0 100-2H13z" fill-rule="evenodd"></path><path d="M22 14h4a1 1 0 00.7-1.7l-5-5A1 1 0 0020 8v4c0 1.1.9 2 2 2z"></path></svg>
+            <span>2b.png</span>
+          </button>
+          <span class="avatar__name">${user1.name}</span>
+          `;
+          document.getElementById('messages').appendChild(li);
+        }
         document.querySelector('.file-btn').addEventListener("click", () => downloadFile(fileName, fileUrl));
         document.getElementById('messages').appendChild(document.createElement('br'));
         document.getElementById('messages').appendChild(document.createElement('br'));
@@ -726,7 +796,7 @@
         let room='';
         if(document.getElementById('yourRoom')!==null) room=document.getElementById('yourRoom').value
 
-        socket.emit('sendMessage',data,room);
+        socket.emit('sendMessage',data,user,room);
         const mess=document.createElement('li');
         mess.innerHTML=data;
         mess.classList.add('liRight');
@@ -752,8 +822,8 @@
         input = JSON.stringify([file.name, e.target.result]);
         if (input) {
           const room=document.getElementById('yourRoom').value;
-          socket.emit('sendFile', input,room);
-          appendHTML(input,'liRight');
+          socket.emit('sendFile', input,user,room);
+          appendHTML(input,user,'liRight');
           input = '';
           socket.emit('finished sending');
           console.log("finished sending");
@@ -770,10 +840,10 @@
     };
 
     //receive file
-    socket.on('receiveFile',msg=>{
+    socket.on('receiveFile',(msg,user1)=>{
       if(msg)
       {
-        appendHTML(msg,'liLeft');
+        appendHTML(msg,user1,'liLeft');
       }
     });
     
@@ -803,23 +873,22 @@
     });
 
     // append list friend
-    function appendFriend(name,urlAvatar)
+    function appendFriend(user)
     {
       const list = document.getElementById('listFriend');
       const li = document.createElement('li');
       li.classList.add('listFriend__item');
       li.innerHTML=`
       <div class="listFriend__item-avatar">
-        <img class="avatar__img" src='${urlAvatar}'>
+        <img class="avatar__img" src='${user.urlAvatar}'>
         <span class="avatar__cir"></span>
       </div>
-      <span class="listFriend__item-name">${name}</span>
+      <span class="listFriend__item-name">${user.name}</span>
       `;
       list.appendChild(li);
     }
     const listRoom=document.querySelectorAll('.room');
-    console.log(listRoom);
-    
+
 
     listRoom.forEach((room,index)=>
     {
@@ -829,10 +898,15 @@
         document.getElementById('messages').innerHTML='';
         document.querySelector('.active-name').innerHTML=Rooms[index+1].name;
         document.querySelector('.avatar__img1').setAttribute('src',Rooms[index+1].img);
-
+        
         const mess=document.createElement('li');
-        mess.innerHTML=`${name} đã tham gia chat ${ document.getElementById('yourRoom').value}`;
         mess.classList.add('liLeft');
+        mess.innerHTML=
+        `<div class="status-avatar1">
+            <img class="avatar__img2" src="${user.urlAvatar}">
+          </div>
+          <span class="content-mess">${user.name} đã tham gia chat ${ document.getElementById('yourRoom').value}</span>
+          <span class="avatar__name">${user.name}</span>`;
         document.getElementById('messages').appendChild(mess);
         document.getElementById('messages').appendChild(document.createElement('br'));
         document.getElementById('messages').appendChild(document.createElement('br'));        
@@ -840,7 +914,7 @@
         // send message 
         let room='';
         if(document.getElementById('yourRoom')!==null) room=document.getElementById('yourRoom').value
-        socket.emit('sendMessage',`${name} đã tham gia chat ${ document.getElementById('yourRoom').value}`,room);
+        socket.emit('sendMessage',`${user.name} đã tham gia chat ${ document.getElementById('yourRoom').value}`,user,room);
         document.getElementById('joinRoom').click();
       });
     });

@@ -50,14 +50,14 @@ io.on('connection', (socket) => {
     socket.emit("init", "welcome");
 
     //receive message from client, send to other clients
-    socket.on('sendMessage',(data,room)=>
+    socket.on('sendMessage',(data,user,room)=>
     {
-        if(room==='') socket.broadcast.emit('receiveMessage',data);  
-        else socket.to(room).emit('receiveMessage',data);
+        if(room==='') socket.broadcast.emit('receiveMessage',data,user);  
+        else socket.to(room).emit('receiveMessage',data,user);
     });
 
     //receive file from client, send to other clients
-    socket.on('sendFile',(msg,room)=>
+    socket.on('sendFile',(msg,user,room)=>
     {
         if (byteCount(msg) > maxFileSize) {
             clients.forEach((clientId) => {
@@ -69,10 +69,10 @@ io.on('connection', (socket) => {
             messages = [];
         }
 
-        if(room==='') socket.broadcast.emit('receiveFile', msg);
+        if(room==='') socket.broadcast.emit('receiveFile', msg,user);
         else
         {
-            socket.to(room).emit('receiveFile', msg);
+            socket.to(room).emit('receiveFile', msg,user);
         };
         
     });
