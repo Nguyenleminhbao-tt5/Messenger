@@ -60,6 +60,7 @@
         
         width:60px;
         display:none;
+        
       }
       #bin {
           display: none;
@@ -551,25 +552,6 @@
             <div class="chat">
                 <div class="content">
                     <ul id="messages">
-                     <!-- <li class="liLeft">
-                        <div class="status-avatar1">
-                          <img class="avatar__img2" src="https://i.pinimg.com/736x/2f/1b/8e/2f1b8ec62f36a424aed23f8583e72376.jpg">
-                        </div>
-                        <span class="content-mess">Chào</span>
-                        <span class="avatar__name">Nam</span>
-                      </li>
-                      <br>
-                      <br>
-                      <li class="liLeft">
-                        <div class="status-avatar1">
-                          <img class="avatar__img2" src="https://i.pinimg.com/736x/2f/1b/8e/2f1b8ec62f36a424aed23f8583e72376.jpg">
-                        </div> 
-                        <button class="file-btn file">
-                          <svg viewBox="0 0 36 36" class="file-icon" fill="currentColor" height="24" width="24"><path clip-rule="evenodd" d="M18 8c0-.6-.4-1-1-1h-6a2 2 0 00-2 2v18c0 1.1.9 2 2 2h14a2 2 0 002-2V17c0-.6-.4-1-1-1h-4a4 4 0 01-4-4V8zm-6 7c0-.6.4-1 1-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm1 3.5a1 1 0 100 2h10a1 1 0 100-2H13zm0 4.5a1 1 0 100 2h10a1 1 0 100-2H13z" fill-rule="evenodd"></path><path d="M22 14h4a1 1 0 00.7-1.7l-5-5A1 1 0 0020 8v4c0 1.1.9 2 2 2z"></path></svg>
-                          <span>2b.png</span>
-                        </button>
-                        <span class="avatar__name">Nam</span>
-                      </li>-->
                     </ul>
                 </div>
                 <div class="Input">
@@ -597,14 +579,14 @@
     // Create 1 socket (client)
     const socket = io({transports: ['websocket'],});
 
-   
-
     // GET NAME
     let countLogin=0;
     let user={
       name:'',
       urlAvatar:''
     };
+    let listFile=[];
+
     if(countLogin<1) 
     { 
       user.name=prompt('Nhập tên USER');
@@ -730,19 +712,25 @@
         xhr.send();
     }
 
+   
     // append HTML
     const appendHTML = (msg,user1,pos) => {
 
         const fileName = JSON.parse(msg)[0];
         const fileUrl = JSON.parse(msg)[1];
 
+        listFile.push({
+          fileName: fileName,
+          fileUrl: fileUrl
+        })
+        console.log(listFile);
         if(pos=='liRight')
         {
           const li= document.createElement('li');
           li.classList.add(pos);
           li.classList.add('file');
           li.innerHTML=
-          ` <button class='file-btn'>
+          ` <button class='file-btn' >
             <svg viewBox="0 0 36 36" class="file-icon" fill="currentColor" height="24" width="24"><path clip-rule="evenodd" d="M18 8c0-.6-.4-1-1-1h-6a2 2 0 00-2 2v18c0 1.1.9 2 2 2h14a2 2 0 002-2V17c0-.6-.4-1-1-1h-4a4 4 0 01-4-4V8zm-6 7c0-.6.4-1 1-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm1 3.5a1 1 0 100 2h10a1 1 0 100-2H13zm0 4.5a1 1 0 100 2h10a1 1 0 100-2H13z" fill-rule="evenodd"></path><path d="M22 14h4a1 1 0 00.7-1.7l-5-5A1 1 0 0020 8v4c0 1.1.9 2 2 2z"></path></svg>
             <span>${fileName}</span>
             <span id='bin'>${fileUrl}</span>
@@ -758,21 +746,24 @@
           `<div class="status-avatar1">
             <img class="avatar__img2" src="${user1.urlAvatar}">
           </div> 
-          <button class="file-btn file">
+          <button class="file-btn file" >
             <svg viewBox="0 0 36 36" class="file-icon" fill="currentColor" height="24" width="24"><path clip-rule="evenodd" d="M18 8c0-.6-.4-1-1-1h-6a2 2 0 00-2 2v18c0 1.1.9 2 2 2h14a2 2 0 002-2V17c0-.6-.4-1-1-1h-4a4 4 0 01-4-4V8zm-6 7c0-.6.4-1 1-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm1 3.5a1 1 0 100 2h10a1 1 0 100-2H13zm0 4.5a1 1 0 100 2h10a1 1 0 100-2H13z" fill-rule="evenodd"></path><path d="M22 14h4a1 1 0 00.7-1.7l-5-5A1 1 0 0020 8v4c0 1.1.9 2 2 2z"></path></svg>
-            <span>2b.png</span>
+            <span>${fileName}</span>
+            <span id='bin'>${fileUrl}</span>
           </button>
           <span class="avatar__name">${user1.name}</span>
           `;
           document.getElementById('messages').appendChild(li);
         }
-        document.querySelector('.file-btn').addEventListener("click", () => downloadFile(fileName, fileUrl));
+        const Files=document.querySelectorAll('.file-btn'); 
+        Files[Files.length -1].addEventListener("click", () => downloadFile(fileName, fileUrl));
+
         document.getElementById('messages').appendChild(document.createElement('br'));
         document.getElementById('messages').appendChild(document.createElement('br'));
         window.scrollTo(0, document.body.scrollHeight);
-    }
 
-
+      }
+    
 
     // save list file
     var form = document.getElementById('form');
@@ -837,15 +828,23 @@
         reader.readAsDataURL(file);
         document.querySelector("#file").value = '';
       }
+        // event download file
+      /*  setTimeout(()=>{
+        let Files=document.querySelectorAll('.file-btn');
+        console.log(Files);
+        file.addEventListener("click", () => downloadFile(listFile[index].fileName,listFile[index].fileUrl));
+        
+        },3000);*/
     };
 
     //receive file
     socket.on('receiveFile',(msg,user1)=>{
       if(msg)
-      {
+      {   
         appendHTML(msg,user1,'liLeft');
+        
       }
-    });
+        });
     
 
     form.addEventListener('submit', function(e) {
@@ -918,6 +917,10 @@
         document.getElementById('joinRoom').click();
       });
     });
+
+    
+
+
  
     
 </script>
