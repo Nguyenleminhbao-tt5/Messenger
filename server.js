@@ -10,6 +10,8 @@ let listFriends=[];
 
 const byteCount = (s) => encodeURI(s).split(/%..|./).length - 1;
 
+app.use('/assets',express.static('assets'));
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
@@ -56,6 +58,14 @@ io.on('connection', (socket) => {
         else socket.to(room).emit('receiveMessage',data,user);
     });
 
+    // recall message
+    socket.on('recall',(mess,data,room)=>
+    {
+        if(room==='') socket.broadcast.emit('recallMess',mess,data);  
+        else socket.to(room).emit('recallMess',mess,data);
+    })
+
+
     //receive file from client, send to other clients
     socket.on('sendFile',(msg,user,room)=>
     {
@@ -76,6 +86,7 @@ io.on('connection', (socket) => {
         };
         
     });
+
     // join room
     socket.on('joinRoom',room=>
     {
@@ -90,7 +101,7 @@ io.on('connection', (socket) => {
     });
 
     // server receive name from client
-   socket.on('addName',name=>
+    socket.on('addName',name=>
     {
         let ob={
             name:name,
@@ -100,6 +111,7 @@ io.on('connection', (socket) => {
         console.log(listFriends);
     });
 
+    
     // server send list friends to client
     socket.emit('getListFriend',listFriends);
     
