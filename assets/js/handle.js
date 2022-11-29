@@ -36,12 +36,24 @@ document.querySelector('.REGISTER').addEventListener('click',()=>
         password: document.querySelector('.PASSWORD').value,
         avatar:document.querySelector('.avaUser').value
     };
-    console.log('Đăng kí thành công');
+    let flag=true;
+    listUser.forEach(user=>
+        {
+            if(user.name==obj.name && user.password==obj.password)
+            {
+                alert('Tài khoản này đã tồn tại');
+                flag=false;
+            }
+
+        })
     
-    
-    listUser.push(obj);
-    document.querySelector('.Register').classList.remove('see');
-    document.querySelector('.Login').classList.add('see');
+    if(flag)
+    {
+        console.log('Đăng kí thành công');
+        listUser.push(obj);
+        document.querySelector('.Register').classList.remove('see');
+        document.querySelector('.Login').classList.add('see');
+    }
 });
 
 document.querySelector('.LOGIN').addEventListener('click',()=>
